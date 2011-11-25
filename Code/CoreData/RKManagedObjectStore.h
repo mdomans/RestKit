@@ -29,6 +29,13 @@
 extern NSString* const RKManagedObjectStoreDidFailSaveNotification;
 
 ///////////////////////////////////////////////////////////////////
+@protocol RKManagedObjectStoreNotificationsDelegate <NSObject>
+
+- (void)handleModelChanges:(NSNotification *)notification;
+
+@end
+
+///////////////////////////////////////////////////////////////////
 
 @protocol RKManagedObjectStoreDelegate
 @optional
@@ -53,6 +60,10 @@ extern NSString* const RKManagedObjectStoreDidFailSaveNotification;
 	NSPersistentStoreCoordinator* _persistentStoreCoordinator;
 	NSObject<RKManagedObjectCache>* _managedObjectCache;
 }
+
+// extra notification receiver
+
+@property (nonatomic, assign) id<RKManagedObjectStoreNotificationsDelegate> notificationReceiver; 
 
 // The delegate for this object store
 @property (nonatomic, assign) NSObject<RKManagedObjectStoreDelegate>* delegate;

@@ -47,6 +47,7 @@ static NSString* const RKManagedObjectStoreThreadDictionaryEntityCacheKey = @"RK
 @synthesize managedObjectModel = _managedObjectModel;
 @synthesize persistentStoreCoordinator = _persistentStoreCoordinator;
 @synthesize managedObjectCache = _managedObjectCache;
+@synthesize notificationReceiver;
 
 + (RKManagedObjectStore*)objectStoreWithStoreFilename:(NSString*)storeFilename {
     return [self objectStoreWithStoreFilename:storeFilename usingSeedDatabaseName:nil managedObjectModel:nil delegate:nil];
@@ -121,6 +122,7 @@ static NSString* const RKManagedObjectStoreThreadDictionaryEntityCacheKey = @"RK
 	_persistentStoreCoordinator = nil;
 	[_managedObjectCache release];
 	_managedObjectCache = nil;
+    notificationReceiver = nil;
     
 	[super dealloc];
 }
@@ -189,7 +191,7 @@ static NSString* const RKManagedObjectStoreThreadDictionaryEntityCacheKey = @"RK
 	[managedObjectContext setPersistentStoreCoordinator:self.persistentStoreCoordinator];
 	[managedObjectContext setUndoManager:nil];
 	[managedObjectContext setMergePolicy:NSOverwriteMergePolicy];
-	
+    	
 	[[NSNotificationCenter defaultCenter] addObserver:self
 											 selector:@selector(objectsDidChange:)
 												 name:NSManagedObjectContextObjectsDidChangeNotification
@@ -275,6 +277,7 @@ static NSString* const RKManagedObjectStoreThreadDictionaryEntityCacheKey = @"RK
 	NSManagedObjectContext* backgroundThreadContext = [threadDictionary objectForKey:RKManagedObjectStoreThreadDictionaryContextKey];
 	if (!backgroundThreadContext) {
 		backgroundThreadContext = [self newManagedObjectContext];
+
 		[threadDictionary setObject:backgroundThreadContext forKey:RKManagedObjectStoreThreadDictionaryContextKey];
 		[backgroundThreadContext release];
 
@@ -282,15 +285,18 @@ static NSString* const RKManagedObjectStoreThreadDictionaryEntityCacheKey = @"RK
                                                  selector:@selector(mergeChanges:)
 													 name:NSManagedObjectContextDidSaveNotification
 												   object:backgroundThreadContext];
+
 	}
 	return backgroundThreadContext;
 }
 
 - (void)mergeChangesOnMainThreadWithNotification:(NSNotification*)notification {
 	assert([NSThread isMainThread]);
+
 	[self.managedObjectContext performSelectorOnMainThread:@selector(mergeChangesFromContextDidSaveNotification:)
 												withObject:notification
 											 waitUntilDone:YES];
+    [self.notificationReceiver handleModelChanges:notification];
 }
 
 - (void)mergeChanges:(NSNotification *)notification {
