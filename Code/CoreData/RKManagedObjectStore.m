@@ -28,8 +28,10 @@
 #define RKLogComponent lcl_cRestKitCoreData
 
 NSString* const RKManagedObjectStoreDidFailSaveNotification = @"RKManagedObjectStoreDidFailSaveNotification";
+NSString* const RKManagedObjectStoreDidSaveNotification =  @"RKManagedObjectStoreDidSaveNotification"; 
 static NSString* const RKManagedObjectStoreThreadDictionaryContextKey = @"RKManagedObjectStoreThreadDictionaryContextKey";
 static NSString* const RKManagedObjectStoreThreadDictionaryEntityCacheKey = @"RKManagedObjectStoreThreadDictionaryEntityCacheKey";
+
 
 @interface RKManagedObjectStore (Private)
 - (id)initWithStoreFilename:(NSString *)storeFilename inDirectory:(NSString *)nilOrDirectoryPath usingSeedDatabaseName:(NSString *)nilOrNameOfSeedDatabaseInMainBundle managedObjectModel:(NSManagedObjectModel*)nilOrManagedObjectModel delegate:(id)delegate;
@@ -296,6 +298,9 @@ static NSString* const RKManagedObjectStoreThreadDictionaryEntityCacheKey = @"RK
 	[self.managedObjectContext performSelectorOnMainThread:@selector(mergeChangesFromContextDidSaveNotification:)
 												withObject:notification
 											 waitUntilDone:YES];
+    [[NSNotificationCenter defaultCenter] postNotificationName:RKManagedObjectStoreDidSaveNotification
+                                                        object:nil 
+                                                      userInfo:[notification userInfo]];
     [self.notificationReceiver handleModelChanges:notification];
 }
 

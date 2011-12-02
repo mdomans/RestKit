@@ -27,6 +27,7 @@
  * Notifications
  */
 extern NSString* const RKManagedObjectStoreDidFailSaveNotification;
+extern NSString* const RKManagedObjectStoreDidSaveNotification;
 
 ///////////////////////////////////////////////////////////////////
 @protocol RKManagedObjectStoreNotificationsDelegate <NSObject>
