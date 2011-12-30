@@ -79,6 +79,7 @@ class RestKit::SpecServer < Sinatra::Base
   end
   
   post '/204' do
+    status 204
     content_type 'application/json'
     ""
   end
@@ -93,6 +94,12 @@ class RestKit::SpecServer < Sinatra::Base
     status 404
     content_type 'text/html'
     "File Not Found"
+  end
+  
+  get '/encoding' do
+    status 200
+    content_type 'text/plain; charset=us-ascii'
+    "ASCII Charset"
   end
   
   post '/notNestedUser' do

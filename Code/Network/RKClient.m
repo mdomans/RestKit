@@ -21,10 +21,11 @@
 #import "RKClient.h"
 #import "RKURL.h"
 #import "RKNotifications.h"
-#import "../Support/RKAlert.h"
-#import "../Support/RKLog.h"
-#import "../Support/RKPathMatcher.h"
-#import "../Support/NSString+RestKit.h"
+#import "RKAlert.h"
+#import "RKLog.h"
+#import "RKPathMatcher.h"
+#import "NSString+RestKit.h"
+#import "RKDirectory.h"
 
 // Set Logging Component
 #undef RKLogComponent
@@ -80,9 +81,7 @@ NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPar
 @synthesize OAuth2AccessToken = _OAuth2AccessToken;
 @synthesize OAuth2RefreshToken = _OAuth2RefreshToken;
 @synthesize HTTPHeaders = _HTTPHeaders;
-#ifdef RESTKIT_SSL_VALIDATION
 @synthesize additionalRootCertificates = _additionalRootCertificates;
-#endif
 @synthesize disableCertificateValidation = _disableCertificateValidation;
 @synthesize reachabilityObserver = _reachabilityObserver;
 @synthesize serviceUnavailableAlertTitle = _serviceUnavailableAlertTitle;
@@ -155,7 +154,7 @@ NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPar
     return self;
 }
 
-- (void)dealloc {
+- (void)dealloc {    
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     
     // Allow KVO to fire
@@ -175,13 +174,15 @@ NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPar
     [_HTTPHeaders release];
     [_additionalRootCertificates release];
 
+    if (sharedClient == self) sharedClient = nil;
+    
     [super dealloc];
 }
 
 - (NSString *)cachePath {
     NSString *cacheDirForClient = [NSString stringWithFormat:@"RKClientRequestCache-%@",
                                    [[NSURL URLWithString:self.baseURL] host]];
-    NSString *cachePath = [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) objectAtIndex:0]
+    NSString *cachePath = [[RKDirectory cachesDirectory]
                            stringByAppendingPathComponent:cacheDirForClient];
     return cachePath;
 }
@@ -236,11 +237,9 @@ NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPar
 	[_HTTPHeaders setValue:value forKey:header];
 }
 
-#ifdef RESTKIT_SSL_VALIDATION
 - (void)addRootCertificate:(SecCertificateRef)cert {
     [_additionalRootCertificates addObject:(id)cert];
 }
-#endif
 
 - (void)reachabilityObserverDidChange:(NSDictionary *)change {
     RKReachabilityObserver *oldReachabilityObserver = [change objectForKey:NSKeyValueChangeOldKey];

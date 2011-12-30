@@ -10,9 +10,9 @@
 
 #import <objc/runtime.h>
 #import "NSManagedObject+ActiveRecord.h"
-#import "../ObjectMapping/RKObjectManager.h"
-#import "../Support/RKLog.h"
-#import "../Support/RKFixCategoryBug.h"
+#import "RKObjectManager.h"
+#import "RKLog.h"
+#import "RKFixCategoryBug.h"
 
 RK_FIX_CATEGORY_BUG(NSManagedObject_ActiveRecord)
 
@@ -120,7 +120,7 @@ static NSNumber *defaultBatchSize = nil;
 {
 	@synchronized(defaultBatchSize)
 	{
-		defaultBatchSize = [NSNumber numberWithInt:newBatchSize];
+		defaultBatchSize = [NSNumber numberWithUnsignedInteger:newBatchSize];
 	}
 }
 
@@ -325,7 +325,7 @@ static NSNumber *defaultBatchSize = nil;
 	NSUInteger count = [context countForFetchRequest:request error:&error];
 	[self handleErrors:error];
 	
-	return [NSNumber numberWithUnsignedInt:count];	
+	return [NSNumber numberWithUnsignedInteger:count];	
 }
 
 + (NSNumber *)numberOfEntitiesWithPredicate:(NSPredicate *)searchTerm;
