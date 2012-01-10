@@ -485,7 +485,10 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
             } else if ([mapping isKindOfClass:[RKObjectMapping class]]) {
                 objectMapping = (RKObjectMapping*)mapping;
             }
-            NSAssert(objectMapping, @"Encountered unknown mapping type '%@'", NSStringFromClass([mapping class]));
+            //NSAssert(objectMapping, @"Encountered unknown mapping type '%@'", NSStringFromClass([mapping class]));
+            if (!objectMapping) {
+                continue;
+            }
             destinationObject = [objectMapping mappableObjectForData:value];
             if ([self mapNestedObject:value toObject:destinationObject withRealtionshipMapping:relationshipMapping]) {
                 appliedMappings = YES;
