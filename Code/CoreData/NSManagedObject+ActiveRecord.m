@@ -35,6 +35,15 @@ static NSNumber *defaultBatchSize = nil;
 
 + (NSEntityDescription*)entity {
 	NSString* className = [NSString stringWithCString:class_getName([self class]) encoding:NSASCIIStringEncoding];
+
+    NSManagedObjectModel *model = [[RKObjectManager sharedManager].objectStore managedObjectModel];
+    for (NSEntityDescription *entity in model) {
+        if ([className isEqualToString:entity.managedObjectClassName])
+        {
+            return [NSEntityDescription entityForName:entity.name inManagedObjectContext:[self managedObjectContext]];
+        }
+    }
+    
 	return [NSEntityDescription entityForName:className inManagedObjectContext:[self managedObjectContext]];
 }
 
