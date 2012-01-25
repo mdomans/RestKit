@@ -49,7 +49,7 @@
         completePath = [baseURL path];
     }
     // Preserve trailing slash in resourcePath
-    if (resourcePath && [resourcePath characterAtIndex:[resourcePath length] - 1] == '/') {
+    if (resourcePath && [resourcePath characterAtIndex:[resourcePath length] - 1] == '/' && [completePath characterAtIndex:[completePath length] - 1] != '/') {
         completePath = [completePath stringByAppendingString:@"/"];
     }
 	NSURL* completeURL = [NSURL URLWithString:completePath relativeToURL:baseURL];
