@@ -333,12 +333,12 @@ static NSString* const RKManagedObjectStoreThreadDictionaryEntityCacheKey = @"RK
 
 		[threadDictionary setObject:backgroundThreadContext forKey:RKManagedObjectStoreThreadDictionaryContextKey];
 		[backgroundThreadContext release];
-
-		[[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(mergeChanges:)
-													 name:NSManagedObjectContextDidSaveNotification
-												   object:backgroundThreadContext];
-
+        if (![NSThread isMainThread]) {
+            [[NSNotificationCenter defaultCenter] addObserver:self
+                                                     selector:@selector(mergeChanges:)
+                                                         name:NSManagedObjectContextDidSaveNotification
+                                                       object:backgroundThreadContext];
+        }
 	}
 	return backgroundThreadContext;
 }
