@@ -349,9 +349,7 @@ static NSString* const RKManagedObjectStoreThreadDictionaryEntityCacheKey = @"RK
 	[self.managedObjectContext performSelectorOnMainThread:@selector(mergeChangesFromContextDidSaveNotification:)
 												withObject:notification
 											 waitUntilDone:YES];
-    [[NSNotificationCenter defaultCenter] postNotificationName:RKManagedObjectStoreDidSaveNotification
-                                                        object:nil 
-                                                      userInfo:[notification userInfo]];
+
 }
 
 - (void)mergeChanges:(NSNotification *)notification {
