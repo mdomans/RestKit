@@ -230,7 +230,8 @@
     NSAssert([mapping conformsToProtocol:@protocol(RKObjectMappingDefinition)], @"Expected an object implementing RKObjectMappingDefinition");
     RKObjectMapping* objectMapping = nil;
     if ([mapping isKindOfClass:[RKDynamicObjectMapping class]]) {
-        objectMapping = [(RKDynamicObjectMapping*)mapping objectMappingForDictionary:mappableData];
+        if (mappableData && ![mappableData isKindOfClass:[NSNull class]]) 
+            objectMapping = [(RKDynamicObjectMapping*)mapping objectMappingForDictionary:mappableData];
         if (! objectMapping) {
             RKLogDebug(@"Mapping %@ declined mapping for data %@: returned nil objectMapping", mapping, mappableData);
         }
